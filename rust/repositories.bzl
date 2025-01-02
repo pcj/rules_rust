@@ -1198,9 +1198,6 @@ def rust_repository_set(
         else:
             fail("extra_rustc_flags should be a list or a dict")
 
-        _strip_level = strip_level.get(toolchain.target_triple) if strip_level != None else None
-        print("toolchain.target_triple:", toolchain.target_triple, _strip_level)
-
         toolchain_info = rust_toolchain_repository(
             name = toolchain.name,
             allocator_library = allocator_library,
@@ -1214,7 +1211,7 @@ def rust_repository_set(
             exec_triple = exec_triple,
             extra_exec_rustc_flags = extra_exec_rustc_flags,
             extra_rustc_flags = toolchain_extra_rustc_flags,
-            strip_level = _strip_level,
+            strip_level = strip_level.get(toolchain.target_triple) if strip_level != None else None,
             opt_level = opt_level.get(toolchain.target_triple) if opt_level != None else None,
             target_settings = target_settings,
             rustfmt_version = rustfmt_version,
