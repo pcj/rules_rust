@@ -158,6 +158,7 @@ def rust_register_toolchains(
         compact_windows_names = _COMPACT_WINDOWS_NAMES,
         toolchain_triples = DEFAULT_TOOLCHAIN_TRIPLES,
         rustfmt_toolchain_triples = DEFAULT_TOOLCHAIN_TRIPLES,
+        strip_level = {},
         extra_toolchain_infos = None):
     """Emits a default set of toolchains for Linux, MacOS, and Freebsd
 
@@ -198,6 +199,7 @@ def rust_register_toolchains(
             toolchains. This is to avoid MAX_PATH issues.
         toolchain_triples (dict[str, str], optional): Mapping of rust target triple -> repository name to create.
         rustfmt_toolchain_triples (dict[str, str], optional): Like toolchain_triples, but for rustfmt toolchains.
+        strip_level (dict[str, dict[str, str]], optional): Strip level for generated rust_toolchains, keyed by toolchain.target_triple (e.g. `{ "aarch64-apple-darwin": { { "dbg": "none", "fastbuild": "none", "opt": "debuginfo" } }`).
         extra_toolchain_infos: (dict[str, dict], optional): Mapping of information about extra toolchains which were created outside of this call, which should be added to the hub repo.
     """
     if not rustfmt_version:
@@ -266,6 +268,7 @@ def rust_register_toolchains(
             rustfmt_version = rustfmt_version,
             extra_rustc_flags = extra_rustc_flags,
             extra_exec_rustc_flags = extra_exec_rustc_flags,
+            strip_level = strip_level,
             sha256s = sha256s,
             urls = urls,
             versions = versions,
@@ -389,6 +392,9 @@ _RUST_TOOLCHAIN_REPOSITORY_ATTRS = {
     "netrc": attr.string(
         doc = ".netrc file to use for authentication; mirrors the eponymous attribute from http_archive",
     ),
+    "strip_level": attr.string_dict(
+        doc = "Rustc strip levels. For more details see the documentation for `rust_toolchain.strip_level`.",
+    ),
     "opt_level": attr.string_dict(
         doc = "Rustc optimization levels. For more details see the documentation for `rust_toolchain.opt_level`.",
     ),
@@ -511,6 +517,7 @@ def _rust_toolchain_tools_repository_impl(ctx):
         include_llvm_tools = include_llvm_tools,
         extra_rustc_flags = ctx.attr.extra_rustc_flags,
         extra_exec_rustc_flags = ctx.attr.extra_exec_rustc_flags,
+        strip_level = ctx.attr.strip_level if ctx.attr.strip_level else None,
         opt_level = ctx.attr.opt_level if ctx.attr.opt_level else None,
         version = ctx.attr.version,
     ))
@@ -610,6 +617,7 @@ def rust_toolchain_repository(
         dev_components = False,
         extra_rustc_flags = None,
         extra_exec_rustc_flags = None,
+        strip_level = None,
         opt_level = None,
         sha256s = None,
         urls = DEFAULT_STATIC_RUST_URL_TEMPLATES,
@@ -637,6 +645,7 @@ def rust_toolchain_repository(
             Requires version to be "nightly". Defaults to False.
         extra_rustc_flags (list, optional): Extra flags to pass to rustc in non-exec configuration.
         extra_exec_rustc_flags (list, optional): Extra flags to pass to rustc in exec configuration.
+        strip_level (dict, optional): strip level config for this toolchain.
         opt_level (dict, optional): Optimization level config for this toolchain.
         sha256s (str, optional): A dict associating tool subdirectories to sha256 hashes. See
             [rust_register_toolchains](#rust_register_toolchains) for more details.
@@ -669,6 +678,7 @@ def rust_toolchain_repository(
         dev_components = dev_components,
         extra_rustc_flags = extra_rustc_flags,
         extra_exec_rustc_flags = extra_exec_rustc_flags,
+        strip_level = strip_level,
         opt_level = opt_level,
         sha256s = sha256s,
         urls = urls,
@@ -1111,6 +1121,7 @@ def rust_repository_set(
         dev_components = False,
         extra_rustc_flags = None,
         extra_exec_rustc_flags = None,
+        strip_level = None,
         opt_level = None,
         sha256s = None,
         urls = DEFAULT_STATIC_RUST_URL_TEMPLATES,
@@ -1144,6 +1155,7 @@ def rust_repository_set(
             Requires version to be "nightly".
         extra_rustc_flags (dict, list, optional): Dictionary of target triples to list of extra flags to pass to rustc in non-exec configuration.
         extra_exec_rustc_flags (list, optional): Extra flags to pass to rustc in exec configuration.
+        strip_level (dict, dict, optional): Dictionary of target triples to strip level config.
         opt_level (dict, dict, optional): Dictionary of target triples to optimiztion config.
         sha256s (str, optional): A dict associating tool subdirectories to sha256 hashes. See
             [rust_register_toolchains](#rust_register_toolchains) for more details.
@@ -1186,6 +1198,9 @@ def rust_repository_set(
         else:
             fail("extra_rustc_flags should be a list or a dict")
 
+        _strip_level = strip_level.get(toolchain.target_triple) if strip_level != None else None
+        print("toolchain.target_triple:", toolchain.target_triple, _strip_level)
+
         toolchain_info = rust_toolchain_repository(
             name = toolchain.name,
             allocator_library = allocator_library,
@@ -1199,6 +1214,7 @@ def rust_repository_set(
             exec_triple = exec_triple,
             extra_exec_rustc_flags = extra_exec_rustc_flags,
             extra_rustc_flags = toolchain_extra_rustc_flags,
+            strip_level = _strip_level,
             opt_level = opt_level.get(toolchain.target_triple) if opt_level != None else None,
             target_settings = target_settings,
             rustfmt_version = rustfmt_version,
