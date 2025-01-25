@@ -200,6 +200,7 @@ def _rust_library_common(ctx, crate_type):
             edition = get_edition(ctx.attr, toolchain, ctx.label),
             rustc_env = ctx.attr.rustc_env,
             rustc_env_files = ctx.files.rustc_env_files,
+            rustc_cargo_manifest_dir_requires_bin_dir = ctx.attr.rustc_cargo_manifest_dir_requires_bin_dir,
             is_test = False,
             data = depset(ctx.files.data),
             compile_data = depset(compile_data),
@@ -252,6 +253,7 @@ def _rust_binary_impl(ctx):
             edition = get_edition(ctx.attr, toolchain, ctx.label),
             rustc_env = ctx.attr.rustc_env,
             rustc_env_files = ctx.files.rustc_env_files,
+            rustc_cargo_manifest_dir_requires_bin_dir = ctx.attr.rustc_cargo_manifest_dir_requires_bin_dir,
             is_test = False,
             data = depset(ctx.files.data),
             compile_data = depset(compile_data),
@@ -717,6 +719,10 @@ _common_attrs = {
     "version": attr.string(
         doc = "A version to inject in the cargo environment variable.",
         default = "0.0.0",
+    ),
+    "rustc_cargo_manifest_dir_requires_bin_dir": attr.bool(
+        doc = "If the crate requires a bin dir in the CARGO_MANIFEST_DIR.",
+        default = False,
     ),
     "_stamp_flag": attr.label(
         doc = "A setting used to determine whether or not the `--stamp` flag is enabled",

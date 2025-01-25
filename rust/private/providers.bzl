@@ -34,6 +34,7 @@ CrateInfo = provider(
         "rustc_env_files": "[File]: Files containing additional environment variables to set for rustc.",
         "rustc_output": "File: The output from rustc from producing the output file. It is optional.",
         "rustc_rmeta_output": "File: The rmeta file produced for this crate. It is optional.",
+        "rustc_cargo_manifest_dir_requires_bin_dir": "bool: If the crate requires a bin dir in the CARGO_MANIFEST_DIR. It is optional.",
         "srcs": "depset[File]: All source Files that are part of the crate.",
         "std_dylib": "File: libstd.so file",
         "type": (

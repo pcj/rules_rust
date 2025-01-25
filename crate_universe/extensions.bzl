@@ -1160,6 +1160,9 @@ _annotation = tag_class(
         "rustc_env_files": _relative_label_list(
             doc = "A list of labels to set on a crate's `rust_library::rustc_env_files` attribute.",
         ),
+        "rustc_cargo_manifest_dir_requires_bin_dir": attr.bool(
+            doc = "If the library CARGO_MANIFEST_DIR needs the ctx.bin_dir included.",
+        ),
         "rustc_flags": attr.string_list(
             doc = "A list of strings to set on a crate's `rust_library::rustc_flags` attribute.",
         ),

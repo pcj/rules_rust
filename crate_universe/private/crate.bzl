@@ -114,6 +114,7 @@ def _annotation(
         proc_macro_deps = None,
         rustc_env = None,
         rustc_env_files = None,
+        rustc_cargo_manifest_dir_requires_bin_dir = None,
         rustc_flags = None,
         shallow_since = None,
         override_targets = None):
@@ -169,6 +170,7 @@ def _annotation(
         rustc_env (dict, optional): Additional variables to set on a crate's `rust_library::rustc_env` attribute.
         rustc_env_files (list, optional): A list of labels to set on a crate's `rust_library::rustc_env_files`
             attribute.
+        rustc_cargo_manifest_dir_requires_bin_dir (bool, optional): See doc elsewhere.
         rustc_flags (list, optional): A list of strings to set on a crate's `rust_library::rustc_flags` attribute.
         shallow_since (str, optional): An optional timestamp used for crates originating from a git repository
             instead of a crate registry. This flag optimizes fetching the source code.
@@ -217,6 +219,7 @@ def _annotation(
             proc_macro_deps = _stringify_list(proc_macro_deps),
             rustc_env = rustc_env,
             rustc_env_files = _stringify_list(rustc_env_files),
+            rustc_cargo_manifest_dir_requires_bin_dir = rustc_cargo_manifest_dir_requires_bin_dir,
             rustc_flags = rustc_flags,
             shallow_since = shallow_since,
             override_targets = override_targets,

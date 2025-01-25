@@ -905,7 +905,11 @@ def construct_arguments(
 
     # Both ctx.label.workspace_root and ctx.label.package are relative paths
     # and either can be empty strings. Avoid trailing/double slashes in the path.
+
     components = "${{pwd}}/{}/{}".format(ctx.label.workspace_root, ctx.label.package).split("/")
+    if crate_info.rustc_cargo_manifest_dir_requires_bin_dir:
+        components = "${{pwd}}/{}/{}/{}".format(ctx.label.workspace_root, ctx.bin_dir.path, ctx.label.package).split("/")
+
     env["CARGO_MANIFEST_DIR"] = "/".join([c for c in components if c])
 
     if out_dir != None:
