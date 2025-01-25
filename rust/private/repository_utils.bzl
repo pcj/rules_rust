@@ -267,6 +267,7 @@ rust_toolchain(
     visibility = ["//visibility:public"],
     extra_rustc_flags = {extra_rustc_flags},
     extra_exec_rustc_flags = {extra_exec_rustc_flags},
+    strip_level = {strip_level},
     opt_level = {opt_level},
     tags = ["rust_version={version}"],
 )
@@ -285,6 +286,7 @@ def BUILD_for_rust_toolchain(
         stdlib_linkflags = None,
         extra_rustc_flags = None,
         extra_exec_rustc_flags = None,
+        strip_level = None,
         opt_level = None):
     """Emits a toolchain declaration to match an existing compiler and stdlib.
 
@@ -305,6 +307,7 @@ def BUILD_for_rust_toolchain(
                                            None.
         extra_rustc_flags (list, optional): Extra flags to pass to rustc in non-exec configuration.
         extra_exec_rustc_flags (list, optional): Extra flags to pass to rustc in exec configuration.
+        strip_level (dict, optional): strip level config for this toolchain.
         opt_level (dict, optional): Optimization level config for this toolchain.
 
     Returns:
@@ -328,6 +331,7 @@ def BUILD_for_rust_toolchain(
     if global_allocator_library:
         global_allocator_library_label = "\"{global_allocator_library}\"".format(global_allocator_library = global_allocator_library)
 
+    # fail("!!")
     return _build_file_for_rust_toolchain_template.format(
         toolchain_name = name,
         binary_ext = system_to_binary_ext(target_triple.system),
@@ -344,6 +348,7 @@ def BUILD_for_rust_toolchain(
         llvm_profdata_label = llvm_profdata_label,
         extra_rustc_flags = extra_rustc_flags,
         extra_exec_rustc_flags = extra_exec_rustc_flags,
+        strip_level = strip_level,
         opt_level = opt_level,
         version = version,
     )
