@@ -4,9 +4,9 @@ load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 load("//private/webdrivers:webdriver_utils.bzl", "build_file_repository", "webdriver_repository")
 
 _FIREFOX_WRAPPER_TEMPLATE_UNIX = """\
-#!/usr/bin/env bash
+#!/bin/sh
 
-set -euo pipefail
+set -eu
 
 exec {firefox} $@
 """
@@ -24,9 +24,9 @@ EXIT /b %exit_code%
 """
 
 _FIREFOX_NOT_FOUND_TEMPLATE_UNIX = """\
-#!/usr/bin/env bash
+#!/bin/sh
 
-set -euo pipefail
+set -eu
 
 >&2 echo "No firefox binary provided. Please export 'FIREFOX_BINARY' and try building again"
 exit 1

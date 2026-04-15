@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/bin/sh
 
-set -euo pipefail
+set -eu
 
-if [[ $# -ne 2 ]]; then
+if [ $# -ne 2 ]; then
     echo >&2 "Usage: $0 /path/to/binary file-output"
     exit 1
 fi
@@ -12,7 +12,10 @@ want_file_output="$2"
 
 out="$(file -L "${binary}")"
 
-if [[ "${out}" != *"${want_file_output}"* ]]; then
-    echo >&2 "Wrong file type: ${out}"
-    exit 1
-fi
+case "${out}" in
+    *"${want_file_output}"*) ;;
+    *)
+        echo >&2 "Wrong file type: ${out}"
+        exit 1
+        ;;
+esac

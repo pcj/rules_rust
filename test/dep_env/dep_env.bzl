@@ -1,8 +1,8 @@
 """Tests for passing configuration to cargo_dep_env rules"""
 
 _SH_WRITER = """\
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/sh
+set -eu
 echo content > $@
 """
 

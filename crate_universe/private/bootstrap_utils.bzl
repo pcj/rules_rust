@@ -47,8 +47,8 @@ _srcs_module = rule(
 )
 
 _INSTALLER_TEMPLATE = """\
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/sh
+set -eu
 cp -f "{path}" "${{BUILD_WORKSPACE_DIRECTORY}}/{dest}"
 """
 

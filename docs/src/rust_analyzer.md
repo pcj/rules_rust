@@ -136,7 +136,7 @@ primarily for muting `stderr` (because `rust-analyzer` will consider that an err
 is passed through `stderr`) and, additionally, for specifying rule arguments. E.g:
 
 ```shell
-#!/usr/bin/bash
+#!/bin/sh
 
 bazel \
     run \

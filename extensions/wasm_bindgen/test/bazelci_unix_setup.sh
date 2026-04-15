@@ -1,10 +1,10 @@
-#!/usr/bin/env bash
+#!/bin/sh
 # A script for installing the necessary dependencies on Buildkite workers to run
 # `rust_wasm_bindgen_test` targets.
 
-set -euo pipefail
+set -eu
 
-function linux_setup() {
+linux_setup() {
     sudo apt -y update
     sudo apt -y install \
         libxcb1 \
@@ -22,7 +22,7 @@ function linux_setup() {
         libx11-xcb1
 }
 
-function macos_setup() {
+macos_setup() {
     # TODO: https://github.com/bazelbuild/continuous-integration/issues/2190
     # safaridriver --enable
     true
@@ -31,9 +31,9 @@ function macos_setup() {
 _UNAME="$(uname)"
 
 
-if [ "${_UNAME}" == "Darwin" ]; then
+if [ "${_UNAME}" = "Darwin" ]; then
     macos_setup
-elif [ "${_UNAME}" == "Linux" ]; then
+elif [ "${_UNAME}" = "Linux" ]; then
     linux_setup
 else
     echo "Unhandled platform: ${_UNAME}"

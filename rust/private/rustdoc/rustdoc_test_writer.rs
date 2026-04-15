@@ -172,12 +172,12 @@ fn write_test_runner_unix(
     strip_substrings: &[String],
 ) {
     let mut content = vec![
-        "#!/usr/bin/env bash".to_owned(),
+        "#!/bin/sh".to_owned(),
         "".to_owned(),
         // TODO: Instead of creating a symlink to mimic the behavior of
         // --legacy_external_runfiles, this rule should be able to correctly
         // sanitize the action args to run in a runfiles without this link.
-        "if [[ ! -e 'external' ]]; then ln -s ../ external ; fi".to_owned(),
+        "if [ ! -e 'external' ]; then ln -s ../ external ; fi".to_owned(),
         "".to_owned(),
         "exec env - \\".to_owned(),
     ];

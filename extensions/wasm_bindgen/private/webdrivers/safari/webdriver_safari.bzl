@@ -3,9 +3,9 @@
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 
 _SAFARIDRIVER_WRAPPER_TEMPLATE = """\
-#!/usr/bin/env bash
+#!/bin/sh
 
-set -euo pipefail
+set -eu
 
 exec {safaridriver} $@
 """

@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/bin/sh
 
-set -euo pipefail
+set -eu
 set -x
 
 cd "${BUILD_WORKSPACE_DIRECTORY}"
 
-if [[ "$#" -ne 2 ]]; then
+if [ "$#" -ne 2 ]; then
   echo >&2 "Usage: $0 //targets/to:test //:vendor_target"
   exit 1
 fi
@@ -21,11 +21,16 @@ echo >&2 "Running test which is expected to pass, now that patch is applied"
 bazel test "${targets_to_test}"
 
 echo >&2 "Changing the version of the vendored crate, so that the patch no longer applies"
-sed_i=(sed -i)
-if [[ "$(uname)" == "Darwin" ]]; then
-  sed_i=(sed -i '')
-fi
-"${sed_i[@]}" -e 's#^version = "1\.5\.0"$#version = "2.0.0"#' "${vendored_lazy_static_dir}/Cargo.toml"
+
+sed_i() {
+    if [ "$(uname)" = "Darwin" ]; then
+        sed -i '' "$@"
+    else
+        sed -i "$@"
+    fi
+}
+
+sed_i -e 's#^version = "1\.5\.0"$#version = "2.0.0"#' "${vendored_lazy_static_dir}/Cargo.toml"
 
 echo >&2 "Running build which is expected to fail, as the patch no longer applies"
 
@@ -34,21 +39,24 @@ output="$(bazel build "${targets_to_test}" 2>&1)"
 exit_code=$?
 set -e
 
-if [[ "$exit_code" -ne 1 ]]; then
+if [ "$exit_code" -ne 1 ]; then
   echo >&2 "Expected build failure, but exit code was ${exit_code}. Output:"
   echo >&2 "${output}"
   exit 1
 fi
 
-if [[ "${output}" != *"cannot find value \`VENDORED_BY\` in crate \`lazy_static\`"* ]]; then
-  echo >&2 "Expected compile failure due to missing VENDORED_BY symbol because the patch stopped applying. Output:"
-  echo >&2 "${output}"
-  exit 1
-fi
+case "${output}" in
+  *"cannot find value \`VENDORED_BY\` in crate \`lazy_static\`"*) ;;
+  *)
+    echo >&2 "Expected compile failure due to missing VENDORED_BY symbol because the patch stopped applying. Output:"
+    echo >&2 "${output}"
+    exit 1
+    ;;
+esac
 
 echo >&2 "Build failed as expected, making patch re-apply"
 
-"${sed_i[@]}" -e 's#^version = "2\.0\.0"$#version = "1.5.0"#' "${vendored_lazy_static_dir}/Cargo.toml"
+sed_i -e 's#^version = "2\.0\.0"$#version = "1.5.0"#' "${vendored_lazy_static_dir}/Cargo.toml"
 
 echo >&2 "Running test which is expected to pass, now that patch is re-applied"
 bazel test "${targets_to_test}"

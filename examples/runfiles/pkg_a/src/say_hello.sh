@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 echo "Hello, world from $(pwd)"
 echo "========================"
